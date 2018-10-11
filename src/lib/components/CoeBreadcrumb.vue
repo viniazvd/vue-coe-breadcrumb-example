@@ -54,7 +54,11 @@ export default {
       return (!crumb.path && '/') || crumb
     },
 
-    syncRoute ({ matched, params, query }) {
+    syncRoute ({ matched, params, query, name }) {
+      // const hasHidden = matched.some(route => this.$breadcrumb.hidden.includes(route.name))
+      console.log('name', name)
+
+      // console.log(this.$route)
       this.$breadcrumb.syncRoute({ matched, query, params })
     }
   }

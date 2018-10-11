@@ -1,29 +1,23 @@
 const crumbsFactory = context => {
   return {
     // getters
-    crumbs: context.$store.getters.crumbs,
+    crumbs: context.$store.getters.__crumbs,
 
-    loaderMsg: context.$store.getters.loaderMsg,
+    loaderMsg: context.$store.getters.__loaderMsg,
 
-    separator: context.$store.getters.separator,
+    separator: context.$store.getters.__separator,
 
-    loading: context.$store.getters.loading,
+    loading: context.$store.getters.__loading,
+
+    hidden: context.$store.getters.__hidden,
 
     // actions
-    syncStore (label, name) {
-      context.$store.dispatch('BREADCRUMB_SYNC_STORE', { label, name })
+    syncStore (routes, label, name, hidden) {
+      context.$store.dispatch('BREADCRUMB_SYNC_STORE', { routes, label, name, hidden })
     },
 
     syncRoute (name) {
       context.$store.dispatch('BREADCRUMB_SYNC_ROUTE', name)
-    },
-
-    setSeparator (separator) {
-      context.$store.dispatch('BREADCRUMB_SET_SEPARATOR', separator)
-    },
-
-    setLoader (loaderMsg) {
-      context.$store.dispatch('BREADCRUMB_SET_LOADER', loaderMsg)
     },
 
     loader (status) {

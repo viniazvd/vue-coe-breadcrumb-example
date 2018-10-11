@@ -2,13 +2,25 @@ import crumbFactory from './crumbFactory'
 import registerStore from './registerStore'
 
 export default {
-  install (Vue, store, options) {
+  install (Vue, store, options = {}) {
     if (!store) {
       console.error('stack need store')
       return false
     }
 
-    registerStore(store)
+    let { storeName, delay, separatorText, loaderMsg, hidden } = options
+
+    if (!storeName) storeName = 'coebreadcrumb'
+    if (!delay || delay < 501) delay = 501
+    if (!separatorText) separatorText = '|'
+    if (!loaderMsg) loaderMsg = 'loading...'
+    if (!hidden) hidden = []
+
+    registerStore(store, storeName)
+
+    store.dispatch('BREADCRUMB_SET_SEPARATOR', separatorText)
+    store.dispatch('BREADCRUMB_SET_LOADER', loaderMsg)
+    store.dispatch('BREADCRUMB_SET_HIDDEN', hidden)
 
     Object.defineProperty(Vue.prototype, '$breadcrumb', {
       get () {
@@ -16,35 +28,22 @@ export default {
       }
     })
 
-    let { delay, separatorText, loaderMsg } = options
+    // Vue.mixin({
+    //   mounted () {
+    //     if (this.$options.breadcrumb) {
+    //       const { getters: λ, name } = this.$options.breadcrumb
 
-    if (!delay) delay = 500
-    if (!loaderMsg) loaderMsg = 'loading...'
-    if (!separatorText) separatorText = '|'
+    //       this.$breadcrumb.loader(true)
 
-    Vue.mixin({
-      mounted () {
-        if (this.$options.breadcrumb) {
-          const { getters: λ, name } = this.$options.breadcrumb
+    //       setTimeout(() => {
+    //         const routes = this.$breadcrumb.crumbs
+    //         this.$breadcrumb.syncStore(routes, store.getters[λ], name, hidden)
+    //         this.$breadcrumb.loader(false)
+    //       }, delay)
 
-          this.$breadcrumb.setSeparator(separatorText)
-          this.$breadcrumb.setLoader(loaderMsg)
-          this.$breadcrumb.loader(true)
-
-          setTimeout(() => {
-            this.$breadcrumb.syncStore(store.getters[λ], name)
-            this.$breadcrumb.loader(false)
-          }, delay)
-
-          store.watch(() => store.getters[λ], crumb => this.$breadcrumb.syncStore(crumb, name))
-
-          // store.subscribeAction((action) => {
-          //   if (action.type === 'BREADCRUMB_SYNC_ROUTE') {
-          //     console.log((action.payload.params.length && action.payload.params) || action.payload)
-          //   }
-          // })
-        }
-      }
-    })
+    //       // store.watch(() => store.getters[λ], crumb => this.$breadcrumb.syncStore(crumb, name))
+    //     }
+    //   }
+    // })
   }
 }

@@ -21,6 +21,7 @@
 </template>
 
 <script>
+// import { CoeBreadcrumb } from 'vue-coe-breadcrumb'
 import CoeBreadcrumb from '../lib/components/CoeBreadcrumb'
 
 export default {

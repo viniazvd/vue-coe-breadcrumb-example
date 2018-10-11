@@ -55,12 +55,17 @@
 export default {
   name: 'home',
 
+  breadcrumb: {
+    getters: 'category',
+    name: 'Campanhas'
+  },
+
   methods: {
     toCategories (category, campaignSlug) {
       const route = {
         name: 'Detalhes da campanha',
-        params: { campaignSlug },
-        query: { category }
+        query: { category },
+        params: { campaignSlug }
       }
 
       this.$router.push(route)

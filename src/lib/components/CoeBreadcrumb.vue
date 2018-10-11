@@ -47,19 +47,15 @@ export default {
     },
 
     getLabel (crumb) {
-      return this.$breadcrumb.loading ? this.$breadcrumb.loaderMsg : (crumb.label || crumb.name || 'Início')
+      return (crumb.label || crumb.name || 'Início')
     },
 
     redirect (crumb) {
       return (!crumb.path && '/') || crumb
     },
 
-    syncRoute ({ matched, params, query, name }) {
-      // const hasHidden = matched.some(route => this.$breadcrumb.hidden.includes(route.name))
-      console.log('name', name)
-
-      // console.log(this.$route)
-      this.$breadcrumb.syncRoute({ matched, query, params })
+    syncRoute ({ fullPath, name, matched, query, params }) {
+      this.$breadcrumb.syncRoute({ fullPath, name, matched, query, params })
     }
   }
 }

@@ -1,7 +1,6 @@
 export default {
   state: {
     crumbs: [],
-    loaderMsg: '',
     separator: '',
     hidden: [],
     loading: false
@@ -9,8 +8,6 @@ export default {
 
   getters: {
     __crumbs: ({ crumbs }) => crumbs,
-
-    __loaderMsg: ({ loaderMsg }) => loaderMsg,
 
     __separator: ({ separator }) => separator,
 
@@ -26,65 +23,61 @@ export default {
 
     SET_SEPARATOR: (state, separator) => (state.separator = separator),
 
-    SET_LOADER: (state, loaderMsg) => (state.loaderMsg = loaderMsg),
-
-    SET_HIDDEN: (state, hidden) => (state.hidden = hidden),
-
-    HANDLE_LOADER: (state, status) => (state.loading = status)
+    SET_HIDDEN: (state, hidden) => (state.hidden = hidden)
   },
 
   actions: {
-    BREADCRUMB_SYNC_STORE: ({ commit, getters }, { routes, label, name, hidden }) => {
-      console.log('store', routes)
+    BREADCRUMB_SYNC_STORE: ({ commit, getters }, { label, name }) => {
+      const crumbs = getters['__crumbs']
+      const hidden = getters['__hidden']
 
-      const remaped = routes
-        .map(route => {
-          // console.log(route.name === name, label)
-          // console.log('route', route)
-          return (route.name === name && {
-            name: route.name,
-            meta: route.meta,
-            params: route.params,
-            redirect: route.redirect,
+      const remaped = crumbs
+        .map(crumb => {
+          return (crumb.name === name && {
+            name: crumb.name,
+            path: crumb.path,
+            meta: crumb.meta,
+            params: crumb.params,
+            redirect: crumb.redirect,
             label
-          }) || route
+          }) || crumb
         })
-        .filter(route => !hidden.includes(route.name))
+        .filter(crumb => !hidden.includes(crumb.name))
 
       commit('SYNC_STORE', remaped)
     },
 
-    BREADCRUMB_SYNC_ROUTE: ({ commit, getters }, { matched, query = {}, params = {} }) => {
+    BREADCRUMB_SYNC_ROUTE: ({ commit, getters }, { fullPath, name, matched, query = {}, params = {} }) => {
       const crumbs = getters['__crumbs']
       const hidden = getters['__hidden']
 
-      const lastQuery = Object.values(query)[0]
-      const lastParam = Object.values(params)[Object.keys(params).length - 1]
+      function getParam (route, crumb, index) {
+        const _query = Object.values(query)[Object.keys(query).length - 1]
+        const _params = Object.keys(params).length > 1 ? fullPath.split('/')[index] : Object.values(params)[Object.keys(params).length - 1]
 
-      // console.log(lastQuery, lastParam)
+        if (!crumb.name) return undefined
+
+        return (crumb.name && ((route === crumb.name && (_params || _query)) || _query)) || (crumbs.find(_crumb => _crumb.name === crumb.name) || {}).label
+      }
 
       const added = matched
         .map((crumb, index) => {
           return {
             name: crumb.name,
+            path: crumb.path,
             meta: crumb.meta,
             params: crumb.params,
             redirect: crumb.redirect,
-            label: (matched.length - 1 === index && (lastQuery || lastParam)) || (crumbs[index] && crumbs[index].label)
+            label: getParam(name, crumb, index)
           }
         })
         .filter(route => !hidden.includes(route.name))
 
-      console.log('route', added)
       commit('SYNC_ROUTE', added)
     },
 
     BREADCRUMB_SET_SEPARATOR: ({ commit }, separator) => commit('SET_SEPARATOR', separator),
 
-    BREADCRUMB_SET_LOADER: ({ commit }, loaderMsg) => commit('SET_LOADER', loaderMsg),
-
-    BREADCRUMB_SET_HIDDEN: ({ commit }, hidden) => commit('SET_HIDDEN', hidden),
-
-    BREADCRUMB_LOADER: ({ commit }, status) => commit('HANDLE_LOADER', status)
+    BREADCRUMB_SET_HIDDEN: ({ commit }, hidden) => commit('SET_HIDDEN', hidden)
   }
 }

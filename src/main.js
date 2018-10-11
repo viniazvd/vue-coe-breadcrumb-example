@@ -8,11 +8,9 @@ import VueCoeBreadcrumb from './lib/support/plugin'
 
 Vue.use(VueCoeBreadcrumb, store, {
   storeName: 'coemane',
-  delay: 250,
-  separatorText: '>',
-  loaderMsg: 'loading...',
+  separatorText: '>'
   // hidden: ['Detalhes da campanha']
-  hidden: ['Campanhas']
+  // hidden: ['Campanhas']
 })
 
 Vue.config.productionTip = false

@@ -32,10 +32,10 @@ export default {
   },
 
   methods: {
-    to (type) {
+    to (id) {
       const route = {
         name: 'Editar campanha',
-        params: { id: type }
+        params: { id }
       }
 
       this.$router.push(route)

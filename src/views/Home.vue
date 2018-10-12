@@ -55,6 +55,12 @@
 export default {
   name: 'home',
 
+  mounted () {
+    setTimeout(() => {
+      this.$store.dispatch('CATEGORY_ADD', this.$route.query.category)
+    }, 500)
+  },
+
   breadcrumb: {
     getters: 'category',
     name: 'Campanhas'
